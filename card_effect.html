@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>トランプの手札</title>
+    <style>
+
+/* style.css */
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #336633; /* テーブルの背景色 */
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.hand {
+    display: flex; /* カードを横並びにする */
+    position: relative; /* カードの位置調整の基準にする */
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.card {
+    width: 80px; /* カードの幅 */
+    height: 120px; /* カードの高さ */
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column; /* 数字とマークを縦に配置 */
+    justify-content: space-between; /* 上下端に配置 */
+    padding: 5px;
+    margin-right: -40px; /* カードを少し重ねる */
+    position: relative; /* カード内の要素の位置調整の基準 */
+    transition: transform 0.2s ease-in-out; /* ホバー時のアニメーション */
+    z-index: 1; /* 重なり順の初期値 */
+}
+
+.card:last-child {
+    margin-right: 0; /* 最後のカードは重ねない */
+}
+
+/* ホバー時の効果：少し浮き上がらせる */
+.card:hover {
+    transform: translateY(-10px) scale(1.05);
+    z-index: 10; /* ホバーしたカードを前面に表示 */
+}
+
+.rank {
+    font-size: 2em;
+    font-weight: bold;
+    text-align: left; /* 左上 */
+}
+
+.suit {
+    font-size: 2em;
+    text-align: right; /* 右下 */
+}
+
+/* スートの色分け */
+.heart-K .rank,
+.heart-K .suit,
+.diamond-7 .rank,
+.diamond-7 .suit {
+    color: red;
+}
+
+/* 角に小さい数字とマークを配置する */
+.card::before,
+.card::after {
+    content: attr(data-rank) attr(data-suit); /* JavaScriptで設定する場合 */
+    position: absolute;
+    font-size: 0.8em;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.card::before {
+    top: 5px;
+    left: 5px;
+}
+
+.card::after {
+    bottom: 5px;
+    right: 5px;
+    transform: rotate(180deg); /* 逆さまにする */
+}
+
+/* スートの色分け (CSSで直接指定する場合) */
+.spade-A, .club-Q, .spade-5 {
+    color: black;
+}
+
+.heart-K, .diamond-7 {
+    color: red;
+}
+
+    </style>
+</head>
+<body>
+    <div class="hand">
+        <div class="card spade-A">
+            <span class="rank">A</span>
+            <span class="suit">&spades;</span>
+        </div>
+        <div class="card heart-K">
+            <span class="rank">K</span>
+            <span class="suit">&hearts;</span>
+        </div>
+        <div class="card diamond-7">
+            <span class="rank">7</span>
+            <span class="suit">&diams;</span>
+        </div>
+        <div class="card club-Q">
+            <span class="rank">Q</span>
+            <span class="suit">&clubs;</span>
+        </div>
+        <div class="card spade-5">
+            <span class="rank">5</span>
+            <span class="suit">&spades;</span>
+        </div>
+    </div>
+</body>
+</html>

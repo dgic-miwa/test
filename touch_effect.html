@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タップした場所が目立つUI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Interフォントのインポート */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwindのslate-50 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; /* リップルが画面外にはみ出してもスクロールさせない */
+        }
+
+        .tap-area-container {
+            /* flexboxで中央揃え */
+            display: flex;
+            flex-direction: column;
+            gap: 24px; /* Tailwindのgap-6 */
+        }
+
+        .tap-area {
+            position: relative; /* 子要素のリッブルエフェクトの基準位置 */
+            width: 300px; /* 固定幅 */
+            height: 180px; /* 固定高さ */
+            background-color: #ffffff; /* 白い背景 */
+            border: 1px solid #e2e8f0; /* Tailwindのslate-200 */
+            border-radius: 12px; /* Tailwindのrounded-xl */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* リッブルエフェクトが親要素からはみ出さないように */
+            cursor: pointer; /* マウスオーバー時にポインターを表示 */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Tailwindのshadow-xl */
+            transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+            user-select: none; /* テキスト選択を無効化 */
+        }
+
+        /* タップ中のスタイル */
+        .tap-area:active {
+            transform: translateY(2px); /* 少し下に移動 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* シャドウを小さく */
+        }
+
+        .tap-area p {
+            z-index: 1; /* テキストがエフェクトの上に表示されるように */
+            color: #334155; /* Tailwindのslate-700 */
+            font-size: 1.125rem; /* Tailwindのtext-lg */
+            font-weight: 600; /* Tailwindのfont-semibold */
+        }
+
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%; /* 円形 */
+            background-color: rgba(99, 102, 241, 0.4); /* Tailwindのindigo-500の透明度付き */
+            transform: scale(0); /* 初期状態では非表示 */
+            opacity: 0;
+            pointer-events: none; /* エフェクトがタップイベントを妨げないようにする */
+            transition: opacity 0.4s ease-out; /* フェードアウトを滑らかに */
+        }
+
+        /* JavaScriptによって追加されるクラス */
+        .ripple-effect.active {
+            animation: ripple-animation 0.5s ease-out forwards;
+        }
+
+        /* リップルアニメーションのキーフレーム */
+        @keyframes ripple-animation {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(3); /* 十分な大きさに拡大 */
+                opacity: 0;
+            }
+        }
+
+        /* レスポンシブデザインの調整 */
+        @media (max-width: 600px) {
+            .tap-area {
+                width: 90vw; /* 画面幅の90% */
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tap-area-container">
+        <!-- 最初のタップ可能エリア -->
+        <div class="tap-area">
+            <p>ここをタップしてください</p>
+            <div class="ripple-effect"></div> <!-- リッブルエフェクト要素 -->
+        </div>
+
+        <!-- 2番目のタップ可能エリア -->
+        <div class="tap-area">
+            <p>別のタップエリア</p>
+            <div class="ripple-effect"></div> <!-- リッブルエフェクト要素 -->
+        </div>
+    </div>
+
+    <script>
+        // 全てのタップ可能エリアを取得
+        document.querySelectorAll('.tap-area').forEach(tapArea => {
+            // 各タップエリアにクリックイベントリスナーを追加
+            tapArea.addEventListener('click', function(e) {
+                // 現在のタップエリア内のリップルエフェクト要素を取得
+                const ripple = this.querySelector('.ripple-effect');
+
+                // 既存のアニメーションをリセットするために、activeクラスを削除し、強制的にリフロー
+                ripple.classList.remove('active');
+                // reflowを強制するためのテクニック。これにより、アニメーションが最初から再実行される
+                void ripple.offsetWidth; 
+
+                // タップされた要素の相対位置を取得
+                const rect = this.getBoundingClientRect();
+                // タップされたX座標（要素内での相対座標）
+                const x = e.clientX - rect.left;
+                // タップされたY座標（要素内での相対座標）
+                const y = e.clientY - rect.top;
+
+                // エフェクトの初期サイズを計算 (タップエリアの対角線がカバーできる程度の大きさに)
+                // 幅と高さの大きい方からサイズを決定
+                const size = Math.max(this.offsetWidth, this.offsetHeight);
+                // エフェクト要素の幅と高さを設定
+                ripple.style.width = `${size}px`;
+                ripple.style.height = `${size}px`;
+                // エフェクト要素の左端の位置を設定 (中心がタップ位置に来るように)
+                ripple.style.left = `${x - size / 2}px`;
+                // エフェクト要素の上端の位置を設定 (中心がタップ位置に来るように)
+                ripple.style.top = `${y - size / 2}px`;
+
+                // activeクラスを追加してアニメーションを開始
+                ripple.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
