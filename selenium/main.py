@@ -4,6 +4,8 @@ from selenium.webdriver.firefox.options import Options # Optionsクラスをイ�
 from selenium.webdriver.common.by import By # 要素を見つけるためのByクラスをインポート
 from selenium.webdriver.support.ui import WebDriverWait # 要素の待機処理に使う
 from selenium.webdriver.support import expected_conditions as EC # 待機条件に使う
+from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 def run_firefox_selenium_example():
